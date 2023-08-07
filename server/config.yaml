@@ -1,0 +1,207 @@
+system:
+  env: public
+  addr: 8888
+  db-type: mysql
+  oss-type: local
+  use-multipoint: false
+  use-redis: false
+  iplimit-count: 15000
+  iplimit-time: 3600
+  router-prefix: ""
+zap:
+  level: info
+  prefix:
+  format: console
+  director: log
+  encode-level: LowercaseColorLevelEncoder
+  stacktrace-key: stacktrace
+  max-age: 0
+  show-line: true
+  log-in-console: true
+jwt:
+  signing-key: afc08992-bc1d-451c-a4eb-9b7ec3240514
+  expires-time: 7d
+  buffer-time: 1d
+  issuer: jenkins-wrapper-ci
+redis:
+  db: 10
+  addr: 127.0.0.1:6379
+  password: ""
+
+mssql:
+  path: ""
+  port: ""
+  config: ""
+  db-name: ""
+  username: ""
+  password: ""
+  prefix: ""
+  singular: false
+  engine: ""
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: ""
+  log-zap: false
+mysql:
+  path: 127.0.0.1
+  port: "3306"
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: jenkins_wrapper_ci
+  username: root
+  password: secret
+  prefix: ""
+  singular: false
+  engine: ""
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: error
+  log-zap: false
+oracle:
+  path: ""
+  port: ""
+  config: ""
+  db-name: ""
+  username: ""
+  password: ""
+  prefix: ""
+  singular: false
+  engine: ""
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: ""
+  log-zap: false
+pgsql:
+  path: ""
+  port: ""
+  config: ""
+  db-name: ""
+  username: ""
+  password: ""
+  prefix: ""
+  singular: false
+  engine: ""
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: ""
+  log-zap: false
+captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+  open-captcha: 0
+  open-captcha-timeout: 3600
+cors:
+  mode: strict-whitelist
+  whitelist:
+    - allow-origin: example1.com
+      allow-methods: POST, GET
+      allow-headers: Content-Type,AccessToken,X-CSRF-Token, Authorization, Token,X-Token,X-User-Id
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers,
+        Content-Type
+      allow-credentials: true
+    - allow-origin: example2.com
+      allow-methods: GET, POST
+      allow-headers: content-type
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers,
+        Content-Type
+      allow-credentials: true
+email:
+  to: xxx@qq.com
+  port: 465
+  from: xxx@163.com
+  host: smtp.163.com
+  is-ssl: true
+  secret: xxx
+  nickname: test
+excel:
+  dir: ./resource/excel/
+
+db-list:
+  - disable: true
+    type: ""
+    alias-name: ""
+    path: ""
+    port: ""
+    config: ""
+    db-name: ""
+    username: ""
+    password: ""
+    prefix: ""
+    singular: false
+    engine: ""
+    max-idle-conns: 10
+    max-open-conns: 100
+    log-mode: ""
+    log-zap: false
+local:
+  path: uploads/file
+  store-path: uploads/file
+aliyun-oss:
+  endpoint: yourEndpoint
+  access-key-id: yourAccessKeyId
+  access-key-secret: yourAccessKeySecret
+  bucket-name: yourBucketName
+  bucket-url: yourBucketUrl
+  base-path: yourBasePath
+aws-s3:
+  bucket: xxxxx-10005608
+  region: ap-shanghai
+  endpoint: ""
+  s3-force-path-style: false
+  disable-ssl: false
+  secret-id: your-secret-id
+  secret-key: your-secret-key
+  base-url: https://gin.vue.admin
+  path-prefix: jenkins-wrapper-ci
+hua-wei-obs:
+  path: you-path
+  bucket: you-bucket
+  endpoint: you-endpoint
+  access-key: you-access-key
+  secret-key: you-secret-key
+qiniu:
+  zone: ZoneHuaDong
+  bucket: ""
+  img-path: ""
+  use-https: false
+  access-key: ""
+  secret-key: ""
+  use-cdn-domains: false
+tencent-cos:
+  bucket: xxxxx-10005608
+  region: ap-shanghai
+  secret-id: your-secret-id
+  secret-key: your-secret-key
+  base-url: https://gin.vue.admin
+  path-prefix: jenkins-wrapper-ci
+
+timer:
+  start: true
+  spec: '@daily'
+  with_seconds: false
+  detail:
+  - tableName: sys_operation_records
+    compareField: created_at
+    interval: 2160h
+  - tableName: jwt_blacklists
+    compareField: created_at
+    interval: 168h
+
+
+super-admin-roles:
+  - 888
+  - 999
+
+jenkins-config:
+  url: http://127.0.0.1:9090
+  username: admin
+  password: "123456"
+  timeout: 30
+
+git-credentials:
+  - gitServer: git.xxx.com
+    gitCredentialId: e22cb3d0-d6bd-4308-9a7a-7572ab3bda4a
+  - gitServer: github.com
+    gitCredentialId: e22cb3d0-d6bd-4308-9a7a-7572ab3bda4a
+  - gitServer: gitlab.com
+    gitCredentialId: e22cb3d0-d6bd-4308-9a7a-7572ab3bda4a
