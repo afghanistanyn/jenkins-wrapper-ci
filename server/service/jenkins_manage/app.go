@@ -89,3 +89,11 @@ func (appService *AppService)GetAppInfoList(info jenkins_manageReq.AppSearch) (l
 
 	return  apps, total, err
 }
+
+func (appService *AppService)GetGitRepo(appId uint) (string, error) {
+	var app jenkins_manage.App
+	if err := global.GVA_DB.Model(&app).Where("id = ?", appId).Find(&app).Error; err != nil {
+		return "", err
+	}
+	return app.GitRepo, nil
+}

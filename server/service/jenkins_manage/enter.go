@@ -4,4 +4,5 @@ type ServiceGroup struct {
 	ProjectService
 	AppService
 	BuildService
+	NotificationService
 }

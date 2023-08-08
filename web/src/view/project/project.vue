@@ -99,8 +99,8 @@
         <el-form-item label="描述:"  prop="description" >
           <el-input v-model="formData.description" :clearable="true"  placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="企业微信webhook:"  prop="weworkWebhook" >
-          <el-input v-model="formData.weworkWebhook" :clearable="true"  placeholder="通知机器人" />
+        <el-form-item label="企业微信群机器人:"  prop="weworkWebhook" >
+          <el-input v-model="formData.weworkWebhook" :clearable="true"  placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxx" />
         </el-form-item>
       </el-form>
       <template #footer>

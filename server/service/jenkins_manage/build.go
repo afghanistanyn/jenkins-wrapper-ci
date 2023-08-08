@@ -211,9 +211,11 @@ func PullRunningBuilds() {
 				global.GVA_LOG.Warn("save build err", zap.Error(err))
 				continue
 			}
+
+			var notificationService NotificationService
+			go notificationService.BuildDoneNotification(build)
 		}
-		// every 2s
-		time.Sleep(2 * 1000 * time.Millisecond)
+		time.Sleep(4 * 1000 * time.Millisecond)
 	}
 
 }
