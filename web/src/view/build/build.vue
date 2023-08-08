@@ -160,8 +160,10 @@
 
 
     <el-dialog class="logDialog" v-model="viewBuildLogEnabled" :close="closeViewBuildLogDialog" :title="viewLogTitle"
-      :close-on-click-modal="false" top="2%" width="70%" >
-        <Codemirror v-model:value="buildLog" :options="cmOptions" border ref="cmRef" />
+      :close-on-click-modal="false" top="2%" width="70%">
+      <div style="max-height: 700px; overflow-y: auto; overflow-x: hidden;">
+        <Codemirror id="codemirrorLog" v-model:value="buildLog" :options="cmOptions" border ref="cmRef" />
+      </div>
     </el-dialog>
 
   </div>
@@ -712,8 +714,7 @@ const handleRejectBuild = (row) => {
 const handleViewBuildLog = async (row) => {
   const resp = await findBuild({ ID: row.ID })
   if (resp.code === 0) {
-    console.log("findBuild:", resp)
-
+    // console.log("findBuild:", resp)
     viewBuildLogEnabled.value = true
     await nextTick()
     viewLogTitle.value = "查看日志 [" + resp.data.build.appName + "#" + resp.data.build.buildNumber + "]"
@@ -728,7 +729,14 @@ const handleViewBuildLog = async (row) => {
           timer.value = null
         } else if(resp.code === 0) {
           buildLog.value = resp.data.build.log
-          // nextTick()
+          nextTick(() => {
+            const scrollDom = document.getElementById('codemirrorLog')
+            if (scrollDom) {
+              const parent = scrollDom.parentElement
+              // console.log(scrollDom.scrollHeight)
+              parent.scrollTo(0, scrollDom.scrollHeight)
+            }
+          })
         }
       }, 2000)
     }
