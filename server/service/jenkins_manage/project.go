@@ -65,7 +65,7 @@ func (projectService *ProjectService)DeleteProjectByIds(ids request.IdsReq,delet
 func (projectService *ProjectService)UpdateProject(project jenkins_manage.Project) (err error) {
 	db := global.GVA_DB.Model(&jenkins_manage.Project{})
 	// 不允许修改项目名
-	err = db.Omit("ProjectName").Save(&project).Error
+	err = db.Omit("ProjectName").Where("id = ?", project.ID).Save(&project).Error
 	return err
 }
 
@@ -204,4 +204,12 @@ func (projectService *ProjectService)IsProjectManagers(projectIds request.IdsReq
 		}
 	}
 	return isProjectManagers
+}
+
+func (projectService *ProjectService)GetWeWorkWebHook(projectId uint) (string, error) {
+	var project jenkins_manage.Project
+	if err := global.GVA_DB.Model(&project).Where("id = ?", projectId).Find(&project).Error; err != nil {
+		return "", err
+	}
+	return project.WeWorkWebHook, nil
 }
