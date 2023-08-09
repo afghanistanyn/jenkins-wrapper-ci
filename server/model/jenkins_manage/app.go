@@ -105,36 +105,37 @@ func (app *App) AfterCreate(tx *gorm.DB) (err error) {
             return err
       }
 
-      //parse buildParams
-      folderJob := jenkinsService.GetFolderJobObj(app.Project.ProjectName, app.AppName)
-      // ignore if buildParam not exist
-      buildParameterDefinitions, err := folderJob.GetParameters(context.Background())
-      if err != nil {
-            if strings.Contains(err.Error(), "404") {
-                  return nil
+      // parse buildParmas if use custom config
+      if app.CustomConfig != "" {
+            //parse buildParams
+            folderJob := jenkinsService.GetFolderJobObj(app.Project.ProjectName, app.AppName)
+            // ignore if buildParam not exist
+            buildParameterDefinitions, err := folderJob.GetParameters(context.Background())
+            if err != nil {
+                  if strings.Contains(err.Error(), "404") {
+                        global.GVA_LOG.Info("create jenkins job success", zap.Any("app", app.AppName))
+                        return nil
+                  }
+                  global.GVA_LOG.Info("create jenkins job get job buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+
             }
-            global.GVA_LOG.Info("create jenkins job get job buildParams err", zap.Any("app", app.AppName), zap.Error(err))
-            // todo rollback delete job
-            return err
+            var buildParams BuildParams
+            for _, buildParameterDefinition := range buildParameterDefinitions {
+                  buildParams = append(buildParams, buildParameterDefinition.Name)
+            }
 
-      }
-      var buildParams BuildParams
-      for _, buildParameterDefinition := range buildParameterDefinitions {
-            buildParams = append(buildParams, buildParameterDefinition.Name)
-      }
+            app.BuildParams, err = json.Marshal(buildParams)
+            if err != nil {
+                  global.GVA_LOG.Error("create jenkins job marshal buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+            }
 
-      app.BuildParams, err = json.Marshal(buildParams)
-      if err != nil {
-            global.GVA_LOG.Error("create jenkins job marshal buildParams err", zap.Any("app", app.AppName), zap.Error(err))
-            // todo rollback delete job
-            return err
-      }
-
-      err = tx.Model(&app).UpdateColumn("BuildParams", app.BuildParams).Error
-      if err != nil {
-            global.GVA_LOG.Error("create jenkins job save buildParams err", zap.Any("app", app.AppName), zap.Error(err))
-            // todo rollback delete job
-            return err
+            err = tx.Model(&app).UpdateColumn("BuildParams", app.BuildParams).Error
+            if err != nil {
+                  global.GVA_LOG.Error("create jenkins job save buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+            }
       }
       global.GVA_LOG.Info("create jenkins job success", zap.Any("app", app.AppName))
       return
@@ -154,6 +155,39 @@ func (app *App) AfterUpdate(tx *gorm.DB) (err error) {
             global.GVA_LOG.Error("update jenkins job error", zap.Any("app", app.AppName), zap.Error(err))
             return err
       }
+      // parse buildParmas if use custom config
+      if app.CustomConfig != "" {
+            //parse buildParams
+            folderJob := jenkinsService.GetFolderJobObj(app.Project.ProjectName, app.AppName)
+            // ignore if buildParam not exist
+            buildParameterDefinitions, err := folderJob.GetParameters(context.Background())
+            if err != nil {
+                  if strings.Contains(err.Error(), "404") {
+                        global.GVA_LOG.Info("update jenkins job success", zap.Any("app", app.AppName))
+                        return nil
+                  }
+                  global.GVA_LOG.Info("update jenkins job get job buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+
+            }
+            var buildParams BuildParams
+            for _, buildParameterDefinition := range buildParameterDefinitions {
+                  buildParams = append(buildParams, buildParameterDefinition.Name)
+            }
+
+            app.BuildParams, err = json.Marshal(buildParams)
+            if err != nil {
+                  global.GVA_LOG.Error("update jenkins job marshal buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+            }
+
+            err = tx.Model(&app).UpdateColumn("BuildParams", app.BuildParams).Error
+            if err != nil {
+                  global.GVA_LOG.Error("update jenkins job save buildParams err", zap.Any("app", app.AppName), zap.Error(err))
+                  return err
+            }
+      }
+
       global.GVA_LOG.Info("update jenkins job success", zap.Any("app", app.AppName))
       return
 }
