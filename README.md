@@ -1,7 +1,23 @@
 ### just a user-group-permission wrapper of jenkins, not a ci system.
 
+## concept
+```
+项目 = jenkins folder
+应用 = jenkins job
+发布 = jenkins build
+```
 
-#### build
+## default role and permission
+
+|       | 角色名  | 权限 |
+| -----|  ----  | ---- | 
+| admin |  管理员   | 默认拥有所有权限  |
+| ops   |  运维人员  | 项目、应用、发布所有权限；设置项目管理员等  |
+| dev   |  开发人员  | 项目、应用只读权限；发布相关权限 |
+| project_manager  | 项目管理员  | 除dev角色权限外,可修改项目组、添加删除应用、设置项目成员、审核发布等  |
+
+
+## build
 ```
 mkdir -p /usr/local/jenkins-wrapper-ci/{ui,bin,conf,log}
 
@@ -19,50 +35,19 @@ chmod a+x /usr/local/jenkins-wrapper-ci/bin/jenkins-wrapper-ci
 
 ```
 
-#### run 
+## run 
 ```
 cd /usr/local/jenkins-wrapper-ci
 ./bin/jenkins-wrapper-ci -c ./conf/config.yaml
 ```
 
 
-#### nginx conf
+## init
 ```
-upstream backend {
-        server localhost:8888;
-}
-
-server {
-        listen   8080;
-
-        location / {
-                alias /usr/local/jenkins-wrapper-ci/ui/;
-                index index.html;
-                try_files $uri /index.html;
-        }
-
-        location ^~ /api/ {
-                proxy_set_header Host $http_host;
-                proxy_set_header  X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-                proxy_pass http://backend/;
-        }
-
-        location ^~ /swagger/ {
-                proxy_set_header Host $http_host;
-                proxy_set_header  X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-                proxy_pass http://backend;
-        }
-
-        error_page 404 /404.html;
-        location = /404.html {
-        }
-
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-        }
-}
+1. 访问localhost:8080/init/initdb, 根据提示初始化数据库
+2. 修改config.yaml
+3. 默认用户名密码: admin/123456
 ```
+
+## nginx conf
+see [jenkins-wrapper-ci.conf ](web/nginx/conf.d/jenkins-wrapper-ci.conf)

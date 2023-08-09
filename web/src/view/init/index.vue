@@ -96,7 +96,7 @@ const changeDB = (val) => {
         port: '3306',
         userName: 'root',
         password: '',
-        dbName: 'gva',
+        dbName: 'jenkins_wrapper_ci',
       })
       break
     case 'pgsql':
@@ -106,7 +106,7 @@ const changeDB = (val) => {
         port: '5432',
         userName: 'postgres',
         password: '',
-        dbName: 'gva',
+        dbName: 'jenkins_wrapper_ci',
       })
       break
     case 'oracle':
@@ -116,7 +116,7 @@ const changeDB = (val) => {
         port: '1521',
         userName: 'oracle',
         password: '',
-        dbName: 'gva',
+        dbName: 'jenkins_wrapper_ci',
       })
       break
     case 'mssql':
@@ -126,7 +126,7 @@ const changeDB = (val) => {
         port: '1433',
         userName: 'mssql',
         password: '',
-        dbName: 'gva',
+        dbName: 'jenkins_wrapper_ci',
       })
       break
     default:
@@ -136,7 +136,7 @@ const changeDB = (val) => {
         port: '3306',
         userName: 'root',
         password: '',
-        dbName: 'gva',
+        dbName: 'jenkins_wrapper_ci',
       })
   }
 }
