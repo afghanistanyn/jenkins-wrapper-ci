@@ -11,9 +11,6 @@
         <el-form-item label="应用">
           <el-input v-model="searchInfo.appName" />
         </el-form-item>
-        <el-form-item label="gitCommit">
-          <el-input v-model="searchInfo.gitCommit" placeholder="git commit id" />
-        </el-form-item>
         <el-form-item label="发布状态">
           <el-input v-model="searchInfo.result" />
         </el-form-item>
@@ -40,7 +37,16 @@
         @selection-change="handleSelectionChange">
 
         <el-table-column align="left" label="项目" prop="projectName" width="120" />
-        <el-table-column align="left" label="应用" prop="appName" width="120" />
+        <el-table-column align="left" label="应用" width="170" >
+          <template #default="scope">
+            <div v-if="scope.row.buildNumber !== 0">
+            {{ scope.row.appName }} #{{ scope.row.buildNumber }}
+            </div>
+            <div v-else>
+              {{ scope.row.appName }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="发布参数" prop="buildParamValues" width="200">
           <template #default="scope">
             <div v-for="(paramValue, param) in scope.row.buildParamValues" :key="param">
@@ -48,23 +54,23 @@
             </div>
           </template>
         </el-table-column>
+        <!-- <el-table-column align="left" label="buildNumber" width="110">
+          <template #default="scope">
+            <div v-if="scope.row.buildNumber !== 0">
+              <el-tag type="info" style="margin-left: 30px">{{ scope.row.buildNumber }}</el-tag>
+            </div>
+          </template>
+        </el-table-column> -->
         <el-table-column align="left" label="发布者" width="90">
           <template #default="scope"> {{ formatUser(scope.row.createdBy) }}</template>
         </el-table-column>
         <el-table-column align="left" label="发布内容" prop="buildInfo" />
-        <!-- <el-table-column align="left" label="buildNumber">
-          <template #default="scope">
-            <div v-if="scope.row.buildNumber !== 0">
-              {{ scope.row.buildNumber }}
-            </div>
-          </template>
-        </el-table-column> -->
-        <el-table-column align="left" label="git变更" prop="changes" />
 
 
-        <!-- <el-table-column align="left" label="审核人员" width="90">
+        <el-table-column align="left" label="审核人员" width="90">
           <template #default="scope"> {{ formatUser(scope.row.approveBy) }}</template>
-        </el-table-column> -->
+        </el-table-column>
+        <!-- <el-table-column align="left" label="git变更" prop="changes" /> -->
         <!-- <el-table-column align="left" label="gitCommit" prop="gitCommit" width="120" /> -->
         <el-table-column align="left" label="审核状态" prop="approveStatus" width="120">
           <template #default="scope">
@@ -141,7 +147,6 @@
             placeholder="请填写发布内容" />
         </el-form-item>
 
-
         <el-form-item label="审核状态:" prop="status">
           <el-select v-model="formData.approveStatus" placeholder="请选择" style="width:100%" :clearable="true" disabled>
             <el-option v-for=" item  in  approveStatusOptions " :key="item.key" :label="item.label" :value="item.key" />
@@ -159,8 +164,13 @@
 
 
 
-    <el-dialog class="logDialog" v-model="viewBuildLogEnabled" :close="closeViewBuildLogDialog" :title="viewLogTitle"
-      :close-on-click-modal="false" top="2%" width="70%">
+    <el-dialog class="logDialog" v-model="viewBuildLogEnabled" :close="closeViewBuildLogDialog" :close-on-click-modal="false" top="2%" width="75%">
+      <template #header="{ titleId, titleClass }">
+      <div class="el-dialog-header">
+        <h4 :id="titleId" :class="titleClass">{{ viewLogTitle }}</h4>
+        <span class="header-sub-title">{{viewLogSubTitle}}</span>
+      </div>
+    </template>
       <div style="max-height: 700px; overflow-y: auto; overflow-x: hidden;">
         <Codemirror id="codemirrorLog" v-model:value="buildLog" :options="cmOptions" border ref="cmRef" />
       </div>
@@ -295,14 +305,15 @@ const searchInfo = ref({
   projectId: undefined,
   projectName: undefined,
   appName: undefined,
-  gitCommit: undefined,
   result: undefined,
   mine: true,
 })
 
 const viewBuildLogEnabled = ref(false)
 const viewLogTitle = ref()
+const viewLogSubTitle = ref()
 const buildLog = ref()
+const buildDuration = ref()
 const timer = ref()
 const cmRef = ref()
 const cmOptions = {
@@ -717,18 +728,24 @@ const handleViewBuildLog = async (row) => {
     // console.log("findBuild:", resp)
     viewBuildLogEnabled.value = true
     await nextTick()
-    viewLogTitle.value = "查看日志 [" + resp.data.build.appName + "#" + resp.data.build.buildNumber + "]"
+    viewLogTitle.value = "查看日志 [ " + resp.data.build.appName + "#" + resp.data.build.buildNumber + " ]"
     buildLog.value = resp.data.build.log
+    buildDuration.value = (resp.data.build.duration / 1000).toFixed(2)
+    viewLogSubTitle.value =  "本次发布共消耗" + buildDuration.value + "s"
 
     if (resp.data.build.result === 3) {
         timer.value = setInterval(async () => {
         const resp = await findBuild({ ID: row.ID })
         if(!viewBuildLogEnabled.value || (resp.code === 0 && resp.data.build.result !== 3)) {
           buildLog.value = resp.data.build.log
+          buildDuration.value = (resp.data.build.duration / 1000).toFixed(2)
+          viewLogSubTitle.value = "本次发布共消耗" + buildDuration.value + "s"
           clearInterval(timer.value)
           timer.value = null
         } else if(resp.code === 0) {
           buildLog.value = resp.data.build.log
+          buildDuration.value = (resp.data.build.duration / 1000).toFixed(2)
+          viewLogSubTitle.value =  "本次发布共消耗" + buildDuration.value + "s"
           nextTick(() => {
             const scrollDom = document.getElementById('codemirrorLog')
             if (scrollDom) {
@@ -751,6 +768,7 @@ const closeViewBuildLogDialog = () => {
     timer.value = null
   }
   buildLog.value = ""
+  buildDuration.value = 0
 }
 
 const handleReCreateBuild = (row) => {

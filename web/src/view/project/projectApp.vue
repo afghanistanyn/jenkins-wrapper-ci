@@ -77,7 +77,7 @@
           <el-input v-model="formData.name" :clearable="true" :disabled="type === 'update'" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="描述:" prop="description">
-          <el-input v-model="formData.description" :clearable="true" :disabled="formData.customConfig !== ''" placeholder="请输入项目描述" />
+          <el-input v-model="formData.description" :clearable="true" placeholder="请输入项目描述" />
         </el-form-item>
         <el-form-item label="发布参数:" prop="buildParams">
           <el-input v-model="formData.buildParams" :clearable="true" :disabled="formData.customConfig !== ''" placeholder="请输入发布参数" />

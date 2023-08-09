@@ -192,16 +192,16 @@ func PullRunningBuilds() {
 			}
 
 			build.GitCommit = jenkinsBuild.GetRevision()
-
-
 			changes, err := json.Marshal(jenkinsBuild.Raw.ChangeSets)
 			if err != nil {
 				global.GVA_LOG.Warn("get jenkins job build changes err", zap.Any("job", build.ProjectName + "/" + build.AppName),  zap.Error(err))
 				build.Changes = ""
 			}
 			build.Changes = string(changes)
+			// todo support parse image from log
 			build.Image = ""
 			build.Log = jenkinsBuild.GetConsoleOutput(context.Background())
+			build.Duration = jenkinsBuild.GetDuration()
 
 			// set update by admin
 			build.UpdatedBy = 1

@@ -45,6 +45,7 @@ type Build struct {
       Image                  string             `json:"image" form:"image" gorm:"column:image;comment:镜像url;"`
       ApproveStatus          int                `json:"approveStatus" form:"approveStatus" gorm:"column:approve_status;default:0;comment:流程状态;"`
       Result                 int                `json:"result" form:"result" gorm:"column:result;default:0;comment:发布状态;"`
+      Duration               float64            `json:"duration" form:"duration" gorm:"column:duration;default:0;comment:发布时间;"`
       Changes                string             `json:"changes" form:"changes" gorm:"column:changes;type:text;comment:本次变更列表;"`
       Log                    string             `json:"log" form:"log" gorm:"column:log;type:text;comment:构建日志;"`
       BuildAt                *time.Time          `json:"buildAt" form:"buildAt" gorm:"column:build_at;comment:构建时间"`
@@ -80,7 +81,13 @@ func (b *Build) AfterFind(tx *gorm.DB) (err error) {
                   global.GVA_LOG.Error("get build log error", zap.Any("build", b.ID), zap.Error(err))
                   return err
             }
+
             b.Log = log
+            if b.Result == BuildResultMap["BUILDING"] {
+                  // jenkins build 静默期默认为5s
+                  // jenkins duration 为毫秒
+                  b.Duration = time.Since(b.BuildAt.Add(-5*time.Second)).Seconds() * 1000
+            }
       }
       return
 

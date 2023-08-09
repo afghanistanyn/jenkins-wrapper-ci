@@ -37,6 +37,7 @@ func (buildApi *BuildApi) CreateBuild(c *gin.Context) {
 		"AppName":{utils.NotEmpty()},
 		"ProjectId":{utils.NotEmpty()},
 		"ProjectName":{utils.NotEmpty()},
+		"BuildInfo": {utils.NotEmpty()},
 		"BuildParamValues":{utils.NotEmpty()},
 		"ApproveStatus": {utils.Eq("1")},
     }
