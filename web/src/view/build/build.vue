@@ -49,8 +49,8 @@
         </el-table-column>
         <el-table-column align="left" label="发布参数" prop="buildParamValues" width="200">
           <template #default="scope">
-            <div v-for="(paramValue, param) in scope.row.buildParamValues" :key="param">
-              {{ param }}: <el-tag type="info" style="margin-left: 30px">{{ paramValue }}</el-tag>
+            <div v-for="(paramValue, param) in scope.row.buildParamValues" :key="param" style="display: flex; align-items: center;">
+              {{ param }}: <div style="flex:1;display: flex;justify-content: flex-end;"><el-tag  type="info" style="width:70px;margin-right: 10px;">{{ paramValue }}</el-tag></div>
             </div>
           </template>
         </el-table-column>
